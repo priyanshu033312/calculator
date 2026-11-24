@@ -1,53 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
     <link rel="stylesheet" href="./index.css">
 </head>
 <body>
-    <div id="calculator">
-        <input type="text" id="input" readonly>
-    <div class="button">
-        <button class="but" onclick="display='';
-        document.querySelector('#input').value=display;">C</button>
-        <button class="but" onclick="display+='1';
-        document.querySelector('#input').value=display;">1</button>
-        <button class="but" onclick="display+='2';
-        document.querySelector('#input').value=display;">2</button>
-        <button class="but" onclick="display+='+';
-        document.querySelector('#input').value=display;">+</button>
-        <button class="but" onclick="display+='3';
-        document.querySelector('#input').value=display;">3</button>
-        <button class="but" onclick="display+='4';
-        document.querySelector('#input').value=display;">4</button>
-        <button class="but" onclick="display+='-';
-        document.querySelector('#input').value=display;">-</button>
-        <button class="but" onclick="display+='5';
-        document.querySelector('#input').value=display;">5</button>
-        <button class="but" onclick="display+='6';
-        document.querySelector('#input').value=display;">6</button>
-        <button class="but" onclick="display+='*';
-        document.querySelector('#input').value=display;">*</button>
-        <button class="but" onclick="display+='7';
-        document.querySelector('#input').value=display;">7</button>
-        <button class="but" onclick="display+='8';
-        document.querySelector('#input').value=display;">8</button>
-        <button class="but" onclick="display+='/';
-        document.querySelector('#input').value=display;">/</button>
-        <button class="but" onclick="display=eval(display);
-        document.querySelector('#input').value=display;">=</button>
-        <button class="but" onclick="display+='9';
-        document.querySelector('#input').value=display;">9</button>
-        <button class="but" onclick="display+='0';
-        document.querySelector('#input').value=display;">0</button>
-        <button class="but" onclick="display+='.';
-        document.querySelector('#input').value=display;">.</button>
+    <main id="calculator">
+        <output id="input" aria-live="polite">0</output>
+        <div class="button">
+            <button class="but fn" data-action="clear">C</button>
+            <button class="but op" data-value="/">÷</button>
+            <button class="but op" data-value="*">×</button>
+            <button class="but op" data-value="-">−</button>
 
-    </div>
-        <script>
-            let display='';
-            document.querySelector('#input').value=display;
-        </script>
-    </div>
+            <button class="but" data-value="7">7</button>
+            <button class="but" data-value="8">8</button>
+            <button class="but" data-value="9">9</button>
+            <button class="but op" data-value="+">+</button>
+
+            <button class="but" data-value="4">4</button>
+            <button class="but" data-value="5">5</button>
+            <button class="but" data-value="6">6</button>
+            <button class="but eq" data-action="equals">=</button>
+
+            <button class="but" data-value="1">1</button>
+            <button class="but" data-value="2">2</button>
+            <button class="but" data-value="3">3</button>
+
+            <button class="but zero" data-value="0">0</button>
+            <button class="but" data-value=".">.</button>
+        </div>
+    </main>
+
+    <script>
+        const input = document.querySelector('#input');
+        const keys = document.querySelector('.button');
+        let display = '';
+
+        function render() {
+            input.value = display || '0';
+        }
+
+        function calculate(expression) {
+            if (!/^[\d.+\-*/]+$/.test(expression)) return 'Error';
+            try {
+                const result = Function('"use strict"; return (' + expression + ')')();
+                return Number.isFinite(result) ? String(Number(result.toFixed(10))) : 'Error';
+            } catch {
+                return 'Error';
+            }
+        }
+
+        keys.addEventListener('click', (event) => {
+            const button = event.target.closest('button');
+            if (!button) return;
+
+            display = input.value === 'Error' ? '' : input.value;
+
+            const action = button.dataset.action;
+            const value = button.dataset.value;
+
+            if (action === 'clear') {
+                display = '';
+            } else if (action === 'equals') {
+                display = display ? calculate(display) : '0';
+            } else if (value) {
+                display += value;
+            }
+
+            render();
+        });
+
+        render();
+    </script>
 </body>
 </html>
